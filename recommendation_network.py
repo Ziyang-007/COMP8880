@@ -16,7 +16,7 @@ def build_graph_from_file(file_path):
             # Split the line by spaces
             nodes = line.strip().split()
             
-            if len(nodes) > 4:
+            if len(nodes) > 40:
                 # The first node is the main node
                 main_node = nodes[0]
                 # The subsequent nodes are the connected nodes
@@ -52,10 +52,34 @@ def read_data_from_file(file_path):
     plt.xticks(range(1, max(len_nodes_distribution)+1))
     plt.grid(True)
     plt.show()
+    
+def analyze_graph(graph):
+    # Check if the graph is connected
+    if nx.is_connected(graph):
+        diameter = nx.diameter(graph)
+        average_path_length = nx.average_shortest_path_length(graph)
+        clustering_coefficient = nx.average_clustering(graph)
+        
+        print(f"Network Diameter: {diameter}")
+        print(f"Average Path Length: {average_path_length}")
+        print(f"Clustering Coefficient: {clustering_coefficient}")
+    else:
+        print("Graph is not connected. Computing metrics for the largest connected component.")
+        largest_cc = max(nx.connected_components(graph), key=len)
+        subgraph = graph.subgraph(largest_cc)
+        
+        diameter = nx.diameter(subgraph)
+        average_path_length = nx.average_shortest_path_length(subgraph)
+        clustering_coefficient = nx.average_clustering(subgraph)
+        
+        print(f"Network Diameter of the largest component: {diameter}")
+        print(f"Average Path Length of the largest component: {average_path_length}")
+        print(f"Clustering Coefficient of the largest component: {clustering_coefficient}")
+
             
 
 # Specify the path to your text file
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/Code/recommendation_network.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.txt'
 
 # read_data_from_file(file_path)  
 
@@ -69,3 +93,6 @@ network_graph = build_graph_from_file(file_path)
 # Print information about the graph
 print(f"Nodes: {len(network_graph.nodes())}")
 print(f"Edges: {len(network_graph.edges())}")
+
+# Analyze the pruned graph
+analyze_graph(network_graph)
