@@ -32,7 +32,7 @@ def build_graph_from_file(file_path):
     
     return graph
 
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.txt'
+file_path = '/home/fengziyang/ANU/COMP8880/recommendation_network.txt'
 graph = build_graph_from_file(file_path)
 
 num_vertices = graph.num_vertices()
@@ -41,7 +41,12 @@ print(f"Number of vertices: {num_vertices}")
 print(f"Number of edges: {num_edges}")
 
 
-pos = gt.sfdp_layout(graph)
-gt.graph_draw(graph, pos, vertex_size=gt.prop_to_size(degree_map, mi=5, ma=15),
-              vertex_fill_color=blocks, vertex_text=graph.vertex_index,
-              output_size=(1000, 1000), output="graph_visualization.png")
+# 随机选择一定比例的节点进行绘图
+import numpy as np
+subsample_size = int(0.1 * graph.num_vertices())  # 例如，只取10%
+all_vertices = np.random.choice(graph.get_vertices(), subsample_size, replace=False)
+subgraph = gt.GraphView(graph, vfilt=lambda v: v in all_vertices)
+print("Finish generate sub-graph")
+pos_subsample = gt.sfdp_layout(subgraph)
+gt.graph_draw(subgraph, pos_subsample, vertex_size=1, edge_pen_width=0.1,
+              output_size=(1000, 1000), output="graph_visualization_subsample.png")
