@@ -32,7 +32,7 @@ def build_graph_from_file(file_path):
     
     return graph
 
-file_path = '/home/fengziyang/ANU/COMP8880/recommendation_network.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.txt'
 graph = build_graph_from_file(file_path)
 
 num_vertices = graph.num_vertices()
@@ -43,22 +43,6 @@ print(f"Number of edges: {num_edges}")
 degree_map = graph.degree_property_map("total")  # 'out', 'in', 'total'
 degrees = degree_map.a  # 获取度数组
 print("Degrees of the vertices:", degrees)
-
-# 随机选择一定比例的节点进行绘图
-import numpy as np
-subsample_size = int(0.1 * graph.num_vertices())  # 例如，只取10%
-all_vertices = np.random.choice(graph.get_vertices(), subsample_size, replace=False)
-subgraph = gt.GraphView(graph, vfilt=lambda v: v in all_vertices)
-print("Finish generate sub-graph")
-pos_subsample = gt.sfdp_layout(subgraph)
-gt.graph_draw(subgraph, pos_subsample, vertex_size=1, edge_pen_width=0.1,
-              output_size=(1000, 1000), output="graph_visualization_subsample.png")
-clust_global = gt.global_clustering(graph)
-print("Global clustering coefficient:", clust_global[0])
-
-largest_comp = gt.label_largest_component(graph)
-lcc_graph = gt.GraphView(graph, vfilt=largest_comp)
-print("Number of vertices in largest component:", lcc_graph.num_vertices())
 
 # # 接近中心性
 # closeness = gt.closeness(graph)
@@ -73,3 +57,25 @@ print("Number of vertices in largest component:", lcc_graph.num_vertices())
 # gt.graph_draw(graph, pos, vertex_size=gt.prop_to_size(degree_map, mi=5, ma=15),
 #               vertex_fill_color=blocks, vertex_text=graph.vertex_index,
 #               output_size=(1000, 1000), output="graph_visualization.png")
+
+import graph_tool.all as gt
+import numpy as np
+
+# 假设 graph 是已经创建的 Graph-tool 图对象
+degree_map = graph.degree_property_map("total")  # 获取每个节点的度数
+degrees = degree_map.a  # 度数数组
+
+# 找到度数最高的20个节点的索引
+top20_indices = np.argsort(-degrees)[:1000]  # 使用负号进行降序排列
+
+# 创建一个子图，仅包含度数最高的20个节点
+subgraph = gt.GraphView(graph, vfilt=lambda v: v in top20_indices)
+print("Finish generate sub-network")
+
+# 为子图计算布局
+pos_subgraph = gt.sfdp_layout(subgraph)
+
+# 绘制子图，可以调整节点大小和颜色以高亮显示这些重要的节点
+gt.graph_draw(subgraph, pos=pos_subgraph, vertex_size=gt.prop_to_size(degree_map, mi=2, ma=10),
+              vertex_fill_color='red', edge_pen_width=2,
+              output_size=(1000, 1000), output="top1000_high_degree_nodes.png")
