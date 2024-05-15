@@ -27,6 +27,22 @@ graph = load_graph_with_progress("recommendation_network.gt")
 print("Number of vertices in loaded graph:", graph.num_vertices())
 print("Number of edges in loaded graph:", graph.num_edges())
 
+# 度中心性：节点的度（即连接到节点的边数）是网络分析中最基本的度量之一。
+degree_map = graph.degree_property_map("total")  # 'out', 'in', 'total'
+degrees = degree_map.a  # 获取度数组
+print("Degrees of the vertices:", degrees)
+
+# 全局聚类系数：衡量节点间三角关系闭合的倾向，反映了网络的聚集程度。
+clust_global = gt.global_clustering(graph)
+print("Global clustering coefficient:", clust_global[0])
+
+# 最大连通分量：找出图中最大的连通子图。
+largest_comp = gt.label_largest_component(graph)
+lcc_graph = gt.GraphView(graph, vfilt=largest_comp)
+print("Number of vertices in largest component:", lcc_graph.num_vertices())
+
+
+
 
 # 假设 graph 是已经创建的 Graph-tool 图对象
 degree_map = graph.degree_property_map("total")  # 获取每个节点的度数

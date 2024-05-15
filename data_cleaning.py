@@ -44,22 +44,34 @@ def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_pat
             asin = item.get("asin", "N/A")
             if asin in id_list:
                 product_info = {
-                    'asin': item.get("asin", "N/A"),
+                    'asin': asin,
                     'title': item.get("title", "N/A"),
-                    'feature': item.get("feature", "N/A"),
                     'description': item.get("description", "N/A"),
-                    'brand': item.get("brand", "N/A"),
-                    'category': item.get("category", "N/A")
+                    'brand': item.get("brand", "N/A")
                 }
                 json_string = json.dumps(product_info, ensure_ascii=False) + "\n"
                 output_file.write(json_string)
 
+# with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'r') as id_file:
+#     id_list = set()
+#     for id in id_file:
+#         id_list.add(id.strip())
+    
+# get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_path)
 
 
-with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'r') as id_file:
-    id_list = []
-    for id in id_file:
-        id_list.append(id.strip())
-    
-get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_path)
-    
+input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta.txt'
+output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta_deduplication.txt'
+def clean_repeat_data(input_file_path, output_file_path):
+    num_lines = sum(1 for _ in open(input_file_path, 'r'))
+    print("num lines: " + str(num_lines))
+    id_set = set()
+    with jsonlines.open(input_file_path) as reader, open(output_file_path, 'w') as output_file:
+        for item in tqdm(reader, total=num_lines, desc='Processing JSON objects'):
+            # Extract the values of the desired keys if they exist
+            asin = item.get("asin", "N/A")
+            if asin not in id_set:
+                json_string = json.dumps(item, ensure_ascii=False) + "\n"
+                id_set.add(asin)
+                output_file.write(json_string)
+clean_repeat_data(input_file_path, output_file_path)
