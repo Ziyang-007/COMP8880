@@ -162,5 +162,4 @@ cython_debug/
 # Dataset
 *.txt
 *.pkl
-*.gt
 *.png
