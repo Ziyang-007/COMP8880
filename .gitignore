@@ -160,6 +160,7 @@ cython_debug/
 .idea/
 
 # Dataset
-*.txt
+/*.txt
+/*.gt
 *.pkl
 *.png
