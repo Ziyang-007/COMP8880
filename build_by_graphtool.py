@@ -32,7 +32,7 @@ def build_graph_from_file(file_path):
     
     return graph
 
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
 graph = build_graph_from_file(file_path)
 
 num_vertices = graph.num_vertices()

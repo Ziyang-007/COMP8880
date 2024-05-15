@@ -21,7 +21,7 @@ def load_graph_with_progress(file_path):
     return graph
 
 # 从 .gt 文件中加载图并显示进度条
-graph = load_graph_with_progress("recommendation_network.gt")
+graph = load_graph_with_progress("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
 
 # 打印图的信息以验证加载成功
 print("Number of vertices in loaded graph:", graph.num_vertices())
@@ -44,21 +44,21 @@ print("Number of vertices in largest component:", lcc_graph.num_vertices())
 
 
 
-# 假设 graph 是已经创建的 Graph-tool 图对象
-degree_map = graph.degree_property_map("total")  # 获取每个节点的度数
-degrees = degree_map.a  # 度数数组
+# # 假设 graph 是已经创建的 Graph-tool 图对象
+# degree_map = graph.degree_property_map("total")  # 获取每个节点的度数
+# degrees = degree_map.a  # 度数数组
 
-# 找到度数最高的20个节点的索引
-top20_indices = np.argsort(-degrees)[:5000]  # 使用负号进行降序排列
+# # 找到度数最高的20个节点的索引
+# top20_indices = np.argsort(-degrees)[:5000]  # 使用负号进行降序排列
 
-# 创建一个子图，仅包含度数最高的20个节点
-subgraph = gt.GraphView(graph, vfilt=lambda v: v in top20_indices)
-print("Finish generate sub-network")
+# # 创建一个子图，仅包含度数最高的20个节点
+# subgraph = gt.GraphView(graph, vfilt=lambda v: v in top20_indices)
+# print("Finish generate sub-network")
 
-# 为子图计算布局
-pos_subgraph = gt.sfdp_layout(subgraph)
+# # 为子图计算布局
+# pos_subgraph = gt.sfdp_layout(subgraph)
 
-# 绘制子图，可以调整节点大小和颜色以高亮显示这些重要的节点
-gt.graph_draw(subgraph, pos=pos_subgraph, vertex_size=gt.prop_to_size(degree_map, mi=2, ma=10),
-              vertex_fill_color='red', edge_pen_width=2,
-              output_size=(1000, 1000), output="top5000_high_degree_nodes.png")
+# # 绘制子图，可以调整节点大小和颜色以高亮显示这些重要的节点
+# gt.graph_draw(subgraph, pos=pos_subgraph, vertex_size=gt.prop_to_size(degree_map, mi=2, ma=10),
+#               vertex_fill_color='red', edge_pen_width=2,
+#               output_size=(1000, 1000), output="top5000_high_degree_nodes.png")
