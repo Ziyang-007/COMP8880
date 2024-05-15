@@ -110,12 +110,37 @@ def save_node_in_product_meta(input_file_path, node_file_path, output_file_path)
 
 
 # 清洗保留后的30w个节点，去除没有度的节点
-input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_nodes.txt'
-output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
-def clean_missing_data(input_file_path, output_file_path):
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_nodes.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
+def clean_missing_data_in_txt(input_file_path, output_file_path):
     with open(input_file_path) as input_file, open(output_file_path, 'w') as output_file:
         for line in input_file:
             nodes = line.strip().split()
             if len(nodes) > 1:
                 output_file.write(line)
-clean_missing_data(input_file_path, output_file_path)
+# clean_missing_data(input_file_path, output_file_path)
+
+
+# 清洗商品meta，保持商品meta的id和网络id一致
+input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta_deduplication.txt'
+node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
+output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_metadata.txt'
+def clean_missing_data_in_json(input_file_path, node_file_path, output_file_path):
+    num_lines = sum(1 for _ in open(input_file_path, 'r'))
+    print("num lines: " + str(num_lines))
+    id_set = set()
+    
+    with open(node_file_path, "r") as node_file:
+        for line in node_file:
+            nodes = line.strip().split()
+            for node in nodes:
+                id_set.add(node)
+    
+    with jsonlines.open(input_file_path) as reader, open(output_file_path, 'w') as output_file:
+        for item in tqdm(reader, total=num_lines, desc='Processing JSON objects'):
+            # Extract the values of the desired keys if they exist
+            asin = item.get("asin", "N/A")
+            if asin in id_set:
+                json_string = json.dumps(item, ensure_ascii=False) + "\n"
+                output_file.write(json_string)
+clean_missing_data_in_json(input_file_path, node_file_path, output_file_path)
