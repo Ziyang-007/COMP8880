@@ -1,5 +1,6 @@
 import networkx as nx
 from tqdm import tqdm
+import matplotlib.pyplot as plt
 import pickle
 
 def build_graph_from_file(file_path):
@@ -29,7 +30,6 @@ def build_graph_from_file(file_path):
     return graph
 
 
-import matplotlib.pyplot as plt
 def read_data_from_file(file_path):
     len_nodes_distribution = []
     # Count the total number of lines to set up tqdm's progress bar
@@ -76,23 +76,44 @@ def analyze_graph(graph):
         print(f"Average Path Length of the largest component: {average_path_length}")
         print(f"Clustering Coefficient of the largest component: {clustering_coefficient}")
 
-            
+def build_meta_list(file_path):
+    # Count the total number of lines to set up tqdm's progress bar
+    with open(file_path, 'r') as file:
+        total_lines = sum(1 for _ in file)
+    
+    # Open the text file and read each line with a progress bar
+    with open(file_path, 'r') as file:
+        id_set = set()
+        for line in tqdm(file, total=total_lines, desc="Building Network"):
+            # Split the line by spaces
+            nodes = line.strip().split()
+            if nodes :
+                for id in nodes:
+                    id_set.add(id)
+    
+    return id_set
 
 # Specify the path to your text file
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_with_degree_161.txt'
 
 # read_data_from_file(file_path)  
 
-# Build the network graph
-network_graph = build_graph_from_file(file_path)
+id_set = build_meta_list(file_path)
+print(len(id_set))
+
+with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'w') as file:
+    for id in id_set:
+        file.write(id + "\n")
+# # Build the network graph
+# network_graph = build_graph_from_file(file_path)
 
 # Python Pickle format (binary)
 # with open('network_graph_pruned.pkl', 'wb') as f:
 #     pickle.dump(network_graph, f)
 
-# Print information about the graph
-print(f"Nodes: {len(network_graph.nodes())}")
-print(f"Edges: {len(network_graph.edges())}")
+# # Print information about the graph
+# print(f"Nodes: {len(network_graph.nodes())}")
+# print(f"Edges: {len(network_graph.edges())}")
 
-# Analyze the pruned graph
-analyze_graph(network_graph)
+# # Analyze the pruned graph
+# analyze_graph(network_graph)
