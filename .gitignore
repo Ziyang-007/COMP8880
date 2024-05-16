@@ -162,8 +162,8 @@ cython_debug/
 # Dataset
 /*.txt
 /*.gt
-*.pkl
-*.png
+/*.pkl
+/*.png
 dataset/highest_degree_nodes.txt
 dataset/highest_degree_product_meta_deduplication.txt
 dataset/recommendation_highest_degree_product_metadata.txt

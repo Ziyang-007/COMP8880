@@ -1,10 +1,11 @@
 import graph_tool.all as gt
 from tqdm import tqdm
+import pickle
 
 def build_graph_from_file(file_path):
     # 创建一个无向图
     graph = gt.Graph(directed=False)
-    # 创建一个字典以存储节点ID到图节点的映射
+    # 创建一个字典以存储节点ID到图节点索引的映射
     node_map = {}
 
     # 计算文件中的行数
@@ -20,16 +21,22 @@ def build_graph_from_file(file_path):
                 # 确保主节点存在于图中
                 main_node = nodes[0]
                 if main_node not in node_map:
-                    node_map[main_node] = graph.add_vertex()
+                    v = graph.add_vertex()
+                    node_map[main_node] = int(v)  # Store vertex index instead of vertex object
 
                 # 处理连接的节点
                 connected_nodes = nodes[1:]
                 for connected_node in connected_nodes:
                     if connected_node not in node_map:
-                        node_map[connected_node] = graph.add_vertex()
+                        v = graph.add_vertex()
+                        node_map[connected_node] = int(v)  # Store vertex index
                     # 在主节点和连接节点之间添加边
-                    graph.add_edge(node_map[main_node], node_map[connected_node])
+                    graph.add_edge(graph.vertex(node_map[main_node]), graph.vertex(node_map[connected_node]))
     
+    # 将node_map保存为pkl文件
+    with open("node_map.pkl", "wb") as f:
+        pickle.dump(node_map, f)
+
     return graph
 
 file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
