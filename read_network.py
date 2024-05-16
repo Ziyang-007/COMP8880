@@ -137,7 +137,7 @@ def find_shortest_path(graph, node_map, node_id1, node_id2):
 
         
 
-# 从 .gt 文件中加载图并显示进度条
+# 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
 graph = load_graph_with_progress("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
 dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
 with open(dict_path, "rb") as f:
