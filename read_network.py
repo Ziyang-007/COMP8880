@@ -148,7 +148,7 @@ with open(dict_path, "rb") as f:
 # connected_ids = get_connected_nodes(graph, node_map, node_id)
 # print("Connected Node IDs:", connected_ids)
 
-# 寻找连个节点直接的最短路径
+# 寻找连个节点之间的最短路径
 node_id1 = 'B000ZK695U'
 node_id2 = 'B00D87TCN8'
 path, length = find_shortest_path(graph, node_map, node_id1, node_id2)
