@@ -165,5 +165,5 @@ cython_debug/
 /*.pkl
 /*.png
 dataset/highest_degree_nodes.txt
-dataset/highest_degree_product_meta_deduplication.txt
 dataset/recommendation_highest_degree_product_metadata.txt
+dataset/product_meta_more_infos.txt

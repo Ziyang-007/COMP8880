@@ -6,7 +6,7 @@ from tqdm import tqdm
 # input_file_path = '/Volumes/970EVOPLUS/AmazonReviewDataset/All_Amazon_Meta.json'
 
 # # Path to your output text file
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
 
 def get_also_view_and_buy(input_file_path, output_file_path):
     # Count the number of lines for the progress bar (optional but helpful)
@@ -49,6 +49,8 @@ def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_pat
                     'asin': asin,
                     'title': item.get("title", "N/A"),
                     'description': item.get("description", "N/A"),
+                    'feature': item.get("feature", "N/A"),
+                    'category': item.get("category", "N/A"),
                     'brand': item.get("brand", "N/A")
                 }
                 json_string = json.dumps(product_info, ensure_ascii=False) + "\n"
@@ -64,8 +66,8 @@ def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_pat
 
 
 # 清洗json中的重复id
-# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta.txt'
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta_deduplication.txt'
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
 def clean_repeat_data(input_file_path, output_file_path):
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
     print("num lines: " + str(num_lines))
@@ -122,9 +124,9 @@ def clean_missing_data_in_txt(input_file_path, output_file_path):
 
 
 # 清洗商品meta，保持商品meta的id和网络id一致
-input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta_deduplication.txt'
+input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
 node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
-output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_metadata.txt'
+output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
 def clean_missing_data_in_json(input_file_path, node_file_path, output_file_path):
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
     print("num lines: " + str(num_lines))
