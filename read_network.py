@@ -135,6 +135,19 @@ def find_shortest_path(graph, node_map, node_id1, node_id2):
 
     return path_vertex_ids, path_length
 
+def evaluation_nlp_score(test_node_id, sim_node_id):
+    evaluation_score = []
+    original_connected_ids = get_connected_nodes(graph, node_map, test_node_id)
+    print("Connected node IDs in original network:", original_connected_ids)
+    for node in original_connected_ids:
+        path, length = find_shortest_path(graph, node_map, sim_node_id, node)
+        if length == 0:
+            evaluation_score.append(1)
+        else:
+            evaluation_score.append(1 * (0.9 ** (float(length))))
+        # print("From node:", node, "Length:", length)
+    return max(evaluation_score)
+    
         
 
 # 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
@@ -143,16 +156,9 @@ dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8
 with open(dict_path, "rb") as f:
         node_map = pickle.load(f)
 
-# 寻找某节点连接的其他节点
-# node_id = 'B00S1ITA2W'
-# connected_ids = get_connected_nodes(graph, node_map, node_id)
-# print("Connected Node IDs:", connected_ids)
-
-# 寻找连个节点之间的最短路径
-node_id1 = 'B000ZK695U'
-node_id2 = 'B00D87TCN8'
-path, length = find_shortest_path(graph, node_map, node_id1, node_id2)
-print("Shortest path:", path, "Length:", length)
+test_node_id = "0679887555"
+sim_node_id = "0375806113"
+print(evaluation_nlp_score(test_node_id, sim_node_id))
 
 # 分析网络和画图
 # analyze_and_draw(graph)
