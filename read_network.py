@@ -138,9 +138,11 @@ def find_shortest_path(graph, node_map, node_id1, node_id2):
 def evaluation_nlp_score(test_node_id, sim_node_id):
     evaluation_score = []
     original_connected_ids = get_connected_nodes(graph, node_map, test_node_id)
-    print("Connected node IDs in original network:", original_connected_ids)
-    for node in original_connected_ids:
+    # print("Connected node IDs in original network:", original_connected_ids)
+    for node in tqdm(original_connected_ids, total=len(original_connected_ids), desc="process one node"):
         path, length = find_shortest_path(graph, node_map, sim_node_id, node)
+        if path == None:
+            evaluation_score.append(0)
         if length == 0:
             evaluation_score.append(1)
         else:
@@ -156,9 +158,19 @@ dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8
 with open(dict_path, "rb") as f:
         node_map = pickle.load(f)
 
-test_node_id = "0679887555"
-sim_node_id = "0375806113"
-print(evaluation_nlp_score(test_node_id, sim_node_id))
+sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products.txt"
+total_score = []
+num_lines = sum(1 for _ in open(sim_node_file, 'r'))
+with open(sim_node_file, "r") as recommendation_node:
+    for line in tqdm(recommendation_node, total=num_lines, desc="Processing lines"):
+        one_node_score = []
+        nodes = line.strip().split()
+        test_node = nodes[0]
+        for sim_node in nodes[1:]:
+            one_node_score.append(evaluation_nlp_score(test_node, sim_node))
+        total_score.append(sum(one_node_score)/len(one_node_score))
+        
+print(sum(total_score)/len(total_score))
 
 # 分析网络和画图
 # analyze_and_draw(graph)
