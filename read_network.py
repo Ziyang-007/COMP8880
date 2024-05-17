@@ -135,42 +135,63 @@ def find_shortest_path(graph, node_map, node_id1, node_id2):
 
     return path_vertex_ids, path_length
 
-def evaluation_nlp_score(test_node_id, sim_node_id):
-    evaluation_score = []
-    original_connected_ids = get_connected_nodes(graph, node_map, test_node_id)
-    # print("Connected node IDs in original network:", original_connected_ids)
-    for node in tqdm(original_connected_ids, total=len(original_connected_ids), desc="process one node"):
-        path, length = find_shortest_path(graph, node_map, sim_node_id, node)
-        if path == None:
-            evaluation_score.append(0)
-        if length == 0:
-            evaluation_score.append(1)
-        else:
-            evaluation_score.append(1 * (0.9 ** (float(length))))
-        # print("From node:", node, "Length:", length)
-    return max(evaluation_score)
-    
-        
+def evaluation_nlp_score(graph, node_map, test_node_id, sim_node_id):
+    path, length = find_shortest_path(graph, node_map, test_node_id, sim_node_id)
+    score = 1 * (0.9 ** length)
+    return score
 
+def node_distance_expectation(graph, distance_threshold=310000):
+    # 获取图中的所有节点
+    nodes = list(graph.vertices())
+    
+    # 用于存储每个节点到其他所有节点的平均最短距离
+    average_distances = []
+    
+    # 使用 tqdm 显示进度条
+    for node in tqdm(nodes, desc="Calculating shortest distances"):
+        # 获取该节点到所有其他节点的最短距离
+        distances = gt.shortest_distance(graph, source=node).get_array()
+        
+        # 过滤掉距离为无限大或者大于阈值的情况
+        valid_distances = [d for d in distances if d < distance_threshold]
+        
+        if len(valid_distances) > 0:
+            # 计算该节点到所有其他节点的平均最短距离
+            avg_distance = sum(valid_distances) / len(valid_distances)
+            average_distances.append(avg_distance)
+        # print(sum(average_distances) / len(average_distances))
+    
+    # 计算所有节点的平均最短距离的平均值
+    if len(average_distances) > 0:
+        total_average_distance = sum(average_distances) / len(average_distances)
+    else:
+        total_average_distance = float('inf')
+    
+    return total_average_distance
+
+    
 # 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
 graph = load_graph_with_progress("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
 dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
 with open(dict_path, "rb") as f:
         node_map = pickle.load(f)
 
-sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products.txt"
-total_score = []
-num_lines = sum(1 for _ in open(sim_node_file, 'r'))
-with open(sim_node_file, "r") as recommendation_node:
-    for line in tqdm(recommendation_node, total=num_lines, desc="Processing lines"):
-        one_node_score = []
-        nodes = line.strip().split()
-        test_node = nodes[0]
-        for sim_node in nodes[1:]:
-            one_node_score.append(evaluation_nlp_score(test_node, sim_node))
-        total_score.append(sum(one_node_score)/len(one_node_score))
+print(node_distance_expectation(graph))
+
+# 评估NLP得分
+# sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products.txt"
+# total_score = []
+# num_lines = sum(1 for _ in open(sim_node_file, 'r'))
+# with open(sim_node_file, "r") as recommendation_node:
+#     for line in tqdm(recommendation_node, total=num_lines, desc="Processing lines"):
+#         one_node_score = []
+#         nodes = line.strip().split()
+#         test_node = nodes[0]
+#         for sim_node in nodes[1:]:
+#             one_node_score.append(evaluation_nlp_score(graph, node_map, test_node, sim_node))
+#         total_score.append(sum(one_node_score)/len(one_node_score))
         
-print(sum(total_score)/len(total_score))
+# print(sum(total_score)/len(total_score))
 
 # 分析网络和画图
 # analyze_and_draw(graph)
