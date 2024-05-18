@@ -1,4 +1,5 @@
 import graph_tool.all as gt
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import numpy as np
 from tqdm import tqdm
 import os
@@ -137,7 +138,10 @@ def find_shortest_path(graph, node_map, node_id1, node_id2):
 
 def evaluation_nlp_score(graph, node_map, test_node_id, sim_node_id):
     path, length = find_shortest_path(graph, node_map, test_node_id, sim_node_id)
-    score = 1 * (0.9 ** length)
+    if path == None:
+        score = 0
+    else:
+        score = 1 * (0.9 ** length)
     return score
 
 def node_distance_expectation(graph, distance_threshold=310000):
@@ -159,7 +163,7 @@ def node_distance_expectation(graph, distance_threshold=310000):
             # 计算该节点到所有其他节点的平均最短距离
             avg_distance = sum(valid_distances) / len(valid_distances)
             average_distances.append(avg_distance)
-        # print(sum(average_distances) / len(average_distances))
+        print(sum(average_distances) / len(average_distances))
     
     # 计算所有节点的平均最短距离的平均值
     if len(average_distances) > 0:
@@ -169,17 +173,8 @@ def node_distance_expectation(graph, distance_threshold=310000):
     
     return total_average_distance
 
-    
-# 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
-graph = load_graph_with_progress("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
-dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
-with open(dict_path, "rb") as f:
-        node_map = pickle.load(f)
-
-print(node_distance_expectation(graph))
-
 # 评估NLP得分
-# sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products.txt"
+# sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products_1000.txt"
 # total_score = []
 # num_lines = sum(1 for _ in open(sim_node_file, 'r'))
 # with open(sim_node_file, "r") as recommendation_node:
@@ -193,5 +188,37 @@ print(node_distance_expectation(graph))
         
 # print(sum(total_score)/len(total_score))
 
-# 分析网络和画图
-# analyze_and_draw(graph)
+def process_line(graph_path, node_map_path, line):
+    one_node_score = []
+    nodes = line.strip().split()
+    test_node = nodes[0]
+    for sim_node in nodes[1:]:
+        score = evaluation_nlp_score(graph_path, node_map_path, test_node, sim_node)
+        one_node_score.append(score)
+    return sum(one_node_score) / len(one_node_score) if one_node_score else 0
+
+if __name__ == '__main__':
+    # 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
+    graph = gt.load_graph("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
+    dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
+    with open(dict_path, "rb") as f:
+        node_map = pickle.load(f)
+    
+    sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products_30340.txt"
+    total_score = []
+    num_lines = sum(1 for _ in open(sim_node_file, 'r'))
+
+    with open(sim_node_file, "r") as recommendation_node:
+        lines = recommendation_node.readlines()
+    
+    # 使用进程池进行并行处理
+    with ProcessPoolExecutor(max_workers=8) as executor:  # Adjust the number of processes as needed
+        futures = [executor.submit(process_line, graph, node_map, line) for line in lines]
+        
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing lines"):
+            total_score.append(future.result())
+    
+    print(total_score)
+
+    # 分析网络和画图
+    # analyze_and_draw(graph)
