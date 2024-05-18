@@ -51,9 +51,6 @@ def node_distance_expectation(graph_path, distance_threshold=310000, num_process
 
 if __name__ == '__main__':
     # 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
-    graph_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt"
-    dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
-    with open(dict_path, "rb") as f:
-        node_map = pickle.load(f)
+    graph_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/recommendation_network.gt"
 
-    print(node_distance_expectation(graph_path, num_processes=8))  # Specify the number of processes here
+    print(node_distance_expectation(graph_path, num_processes=10))  # Specify the number of processes here

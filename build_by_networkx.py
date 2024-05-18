@@ -46,10 +46,10 @@ def read_data_from_file(file_path):
     # Plotting the distribution
     plt.figure(figsize=(10, 6))
     plt.hist(len_nodes_distribution, bins=range(1, max(len_nodes_distribution)+1), edgecolor='black', alpha=0.7)
-    plt.title('Distribution of Number of Nodes per Line')
-    plt.xlabel('Number of Nodes')
-    plt.ylabel('Frequency')
-    plt.xticks(range(1, max(len_nodes_distribution)+1))
+    plt.title('Distribution of Connected Products')
+    plt.xlabel('Number of Connected Products')
+    plt.ylabel('Number of Products')
+    # plt.xticks(range(1, max(len_nodes_distribution)+1))
     plt.grid(True)
     plt.show()
     
@@ -76,7 +76,7 @@ def analyze_graph(graph):
         print(f"Average Path Length of the largest component: {average_path_length}")
         print(f"Clustering Coefficient of the largest component: {clustering_coefficient}")
 
-def build_meta_list(file_path):
+def build_meta_node_list(file_path):
     # Count the total number of lines to set up tqdm's progress bar
     with open(file_path, 'r') as file:
         total_lines = sum(1 for _ in file)
@@ -94,17 +94,18 @@ def build_meta_list(file_path):
     return id_set
 
 # Specify the path to your text file
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_with_degree_161.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes.txt'
 
 # read_data_from_file(file_path)  
 
-id_set = build_meta_list(file_path)
+id_set = build_meta_node_list(file_path)
 print(len(id_set))
-
 with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'w') as file:
     for id in id_set:
         file.write(id + "\n")
-# # Build the network graph
+
+
+# Build the network graph
 # network_graph = build_graph_from_file(file_path)
 
 # Python Pickle format (binary)

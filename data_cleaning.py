@@ -2,12 +2,6 @@ import jsonlines
 import json
 from tqdm import tqdm
 # 第一次清洗数据，获取所有的also buy和also view
-# # Replace this with the actual file path
-# input_file_path = '/Volumes/970EVOPLUS/AmazonReviewDataset/All_Amazon_Meta.json'
-
-# # Path to your output text file
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
-
 def get_also_view_and_buy(input_file_path, output_file_path):
     # Count the number of lines for the progress bar (optional but helpful)
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
@@ -30,9 +24,22 @@ def get_also_view_and_buy(input_file_path, output_file_path):
                 if also_view:
                     output_values.append(also_view)
                 output_file.write(' '.join(output_values) + '\n')
+# input_file_path = '/Volumes/970EVOPLUS/AmazonReviewDataset/All_Amazon_Meta.json'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
                 
+# 洗出特定关联长度的所有点
+def get_node_with_specialize_len(input_file_path, output_file_path):
+    with open(input_file_path, "r") as input_file, open(output_file_path, 'w') as output_file:
+        for line in input_file:
+            nodes = line.strip().split()
+            if len(nodes) == 50:
+                output_file.write(line)
+# iuput_file_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/alsoview_node.txt"
+# output_file_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes.txt"
+# get_node_with_specialize_len(iuput_file_path, output_file_path)
+    
                 
-# 根据读书最高的64w个点清洗出商品meta
+# 根据degree的node清洗出商品meta
 def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_path):
     # Count the number of lines for the progress bar (optional but helpful)
     # num_lines = sum(1 for _ in open(input_file_path, 'r'))
@@ -55,7 +62,8 @@ def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_pat
                 }
                 json_string = json.dumps(product_info, ensure_ascii=False) + "\n"
                 output_file.write(json_string)
-
+# input_file_path = '/Volumes/970EVOPLUS/AmazonReviewDataset/All_Amazon_Meta.json'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
 # with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'r') as id_file:
 #     id_list = set()
 #     for id in id_file:
@@ -66,8 +74,6 @@ def get_meta_from_highest_degree_nodes(input_file_path, id_list, output_file_pat
 
 
 # 清洗json中的重复id
-# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
 def clean_repeat_data(input_file_path, output_file_path):
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
     print("num lines: " + str(num_lines))
@@ -80,14 +86,13 @@ def clean_repeat_data(input_file_path, output_file_path):
                 json_string = json.dumps(item, ensure_ascii=False) + "\n"
                 id_set.add(asin)
                 output_file.write(json_string)
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
 # clean_repeat_data(input_file_path, output_file_path)
 
 
 
 # 清洗64w个节点，只保留meta中出现的30w个
-# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_product_meta_deduplication.txt'
-# node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_with_degree_161.txt'
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_nodes.txt'
 def save_node_in_product_meta(input_file_path, node_file_path, output_file_path):
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
     print("num lines: " + str(num_lines))
@@ -107,26 +112,26 @@ def save_node_in_product_meta(input_file_path, node_file_path, output_file_path)
             output_line = ' '.join(filtered_nodes)
             # 写入文件，每行末尾自动包含换行符
             output_file.write(output_line + '\n')
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
+# node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_clean_degree_nodes.txt'
 # save_node_in_product_meta(input_file_path, node_file_path, output_file_path)
 
 
 
 # 清洗保留后的30w个节点，去除没有度的节点
-# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/highest_degree_nodes.txt'
-# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
 def clean_missing_data_in_txt(input_file_path, output_file_path):
     with open(input_file_path) as input_file, open(output_file_path, 'w') as output_file:
         for line in input_file:
             nodes = line.strip().split()
             if len(nodes) > 1:
                 output_file.write(line)
-# clean_missing_data(input_file_path, output_file_path)
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_clean_degree_nodes.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes_cleaned_0degree.txt'
+# clean_missing_data_in_txt(input_file_path, output_file_path)
 
 
 # 清洗商品meta，保持商品meta的id和网络id一致
-input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
-node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
-output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
 def clean_missing_data_in_json(input_file_path, node_file_path, output_file_path):
     num_lines = sum(1 for _ in open(input_file_path, 'r'))
     print("num lines: " + str(num_lines))
@@ -145,4 +150,7 @@ def clean_missing_data_in_json(input_file_path, node_file_path, output_file_path
             if asin in id_set:
                 json_string = json.dumps(item, ensure_ascii=False) + "\n"
                 output_file.write(json_string)
-clean_missing_data_in_json(input_file_path, node_file_path, output_file_path)
+# input_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos_deduplication.txt'
+# node_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes_cleaned_0degree.txt'
+# output_file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.txt'
+# clean_missing_data_in_json(input_file_path, node_file_path, output_file_path)
