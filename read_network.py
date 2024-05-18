@@ -212,13 +212,13 @@ if __name__ == '__main__':
         lines = recommendation_node.readlines()
     
     # 使用进程池进行并行处理
-    with ProcessPoolExecutor(max_workers=8) as executor:  # Adjust the number of processes as needed
+    with ProcessPoolExecutor(max_workers=11) as executor:  # Adjust the number of processes as needed
         futures = [executor.submit(process_line, graph, node_map, line) for line in lines]
         
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing lines"):
             total_score.append(future.result())
     
-    print(total_score)
+    print(sum(total_score)/len(total_score))
 
     # 分析网络和画图
     # analyze_and_draw(graph)
