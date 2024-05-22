@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
 # Load the dataset
-data_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/product_meta_more_infos.json'
+data_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_product_meta_more_infos.txt'
 df = pd.read_json(data_path, lines=True)
 
 # Select the relevant column

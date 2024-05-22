@@ -94,15 +94,15 @@ def build_meta_node_list(file_path):
     return id_set
 
 # Specify the path to your text file
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes_cleaned_0degree.txt'
 
-# read_data_from_file(file_path)  
+read_data_from_file(file_path)  
 
-id_set = build_meta_node_list(file_path)
-print(len(id_set))
-with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'w') as file:
-    for id in id_set:
-        file.write(id + "\n")
+# id_set = build_meta_node_list(file_path)
+# print(len(id_set))
+# with open("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/node_id.txt", 'w') as file:
+#     for id in id_set:
+#         file.write(id + "\n")
 
 
 # Build the network graph

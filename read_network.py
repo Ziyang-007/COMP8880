@@ -4,6 +4,8 @@ import numpy as np
 from tqdm import tqdm
 import os
 import pickle
+import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
 
 def load_graph_with_progress(file_path):
     # 获取文件大小
@@ -80,7 +82,7 @@ def analyze_and_draw(graph):
     degrees_lcc = degree_map_lcc.a  # 度数数组
 
     # 选取度数最高的10000个节点
-    N = 290000
+    N = 260000
     topN_indices = np.argsort(-degrees_lcc)[:N]  # 使用负号进行降序排列
 
     # 创建一个子图，仅包含度数最高的N个节点
@@ -141,7 +143,7 @@ def evaluation_nlp_score(graph, node_map, test_node_id, sim_node_id):
     if path == None:
         score = 0
     else:
-        score = 1 * (0.9 ** length)
+        score = 1 * (0.9 ** (length - 1))
     return score
 
 def node_distance_expectation(graph, distance_threshold=310000):
@@ -173,20 +175,41 @@ def node_distance_expectation(graph, distance_threshold=310000):
     
     return total_average_distance
 
-# 评估NLP得分
-# sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products_1000.txt"
-# total_score = []
-# num_lines = sum(1 for _ in open(sim_node_file, 'r'))
-# with open(sim_node_file, "r") as recommendation_node:
-#     for line in tqdm(recommendation_node, total=num_lines, desc="Processing lines"):
-#         one_node_score = []
-#         nodes = line.strip().split()
-#         test_node = nodes[0]
-#         for sim_node in nodes[1:]:
-#             one_node_score.append(evaluation_nlp_score(graph, node_map, test_node, sim_node))
-#         total_score.append(sum(one_node_score)/len(one_node_score))
-        
-# print(sum(total_score)/len(total_score))
+def degree_distribution(graph):
+    degrees = graph.get_out_degrees(graph.get_vertices())
+
+    degrees = degrees.astype(int)
+    
+    plt.figure(figsize=(10, 6))
+    plt.hist(degrees, bins=range(min(degrees), max(degrees) + 1), edgecolor='black')
+    plt.title('Degree Distribution')
+    plt.xlabel('Degree')
+    plt.ylabel('Number of Nodes')
+    plt.yscale('log')  # Optional: to better visualize the distribution
+    plt.grid(True)
+    plt.show()
+    
+def nlp_score_diagram(sorted_scores):
+
+    sorted_scores = sorted(total_score, reverse=True)
+    plt.figure(figsize=(10, 6))
+
+    from scipy.stats import gaussian_kde
+
+    kde = gaussian_kde(sorted_scores, bw_method=0.1)
+    density = kde(sorted_scores)
+
+    norm_density = (density - min(density)) / (max(density) - min(density))
+
+    sc = plt.scatter(range(len(sorted_scores)), sorted_scores, c=norm_density, cmap='viridis')
+    plt.colorbar(sc, label='Density')
+
+    plt.title('Score Distribution')
+    plt.ylabel('Score')
+    plt.grid(True)
+    plt.xticks([])  # Hide x-axis labels
+
+    plt.show()
 
 def process_line(graph_path, node_map_path, line):
     one_node_score = []
@@ -197,14 +220,18 @@ def process_line(graph_path, node_map_path, line):
         one_node_score.append(score)
     return sum(one_node_score) / len(one_node_score) if one_node_score else 0
 
+
 if __name__ == '__main__':
     # 从 .gt 文件中加载图并显示进度条, 从 .pkl中加载id映射
-    graph = gt.load_graph("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/recommendation_network.gt")
-    dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/node_map.pkl"
+    graph = gt.load_graph("/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/50_recommendation_network.gt")
+    dict_path = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/network/50_node_map.pkl"
     with open(dict_path, "rb") as f:
         node_map = pickle.load(f)
+        
+    # degree_distribution(graph)
     
-    sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products_30340.txt"
+    # NLP评估
+    sim_node_file = "/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/similar_products_data_50_product_meta_more_infos.txt"
     total_score = []
     num_lines = sum(1 for _ in open(sim_node_file, 'r'))
 
@@ -217,6 +244,9 @@ if __name__ == '__main__':
         
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing lines"):
             total_score.append(future.result())
+    
+    print("Finish generate total_score list")
+    nlp_score_diagram(total_score)
     
     print(sum(total_score)/len(total_score))
 

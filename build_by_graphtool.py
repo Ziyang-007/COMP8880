@@ -39,7 +39,7 @@ def build_graph_from_file(file_path):
 
     return graph
 
-file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/recommendation_network_node.txt'
+file_path = '/Users/fengziyang/Desktop/ANU/COMP8880-NetworkScience/Project/COMP8880/dataset/50_degree_nodes_cleaned_0degree.txt'
 graph = build_graph_from_file(file_path)
 
 num_vertices = graph.num_vertices()
@@ -54,6 +54,10 @@ print("Degrees of the vertices:", degrees)
 largest_comp = gt.label_largest_component(graph)
 lcc_graph = gt.GraphView(graph, vfilt=largest_comp)
 print("Number of vertices in largest component:", lcc_graph.num_vertices())
+
+# 全局聚类系数：衡量节点间三角关系闭合的倾向，反映了网络的聚集程度。
+clust_global = gt.global_clustering(graph)
+print("Global clustering coefficient:", clust_global[0])
 
 graph.save("recommendation_network.gt")
 
