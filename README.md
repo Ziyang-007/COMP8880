@@ -10,10 +10,10 @@ Zeyi Wu u7464326@anu.edu.au
 Australian National University
 
 ## Folder "NLP"
-Code of NLP pre-trained model and their test code
+Code of NLP pre-trained model and their test code.
 
 ## Folder "similarity_result"
-Results of NLP code.    Format: Original product ASIN, Most similar product ASIN, Second similar product ASIN, Third similar product ASIN,
+Results of NLP code.    Format: Original product ASIN, Most similar product ASIN, Second similar product ASIN, Third similar product ASIN.
 
 ## Folder "Network"
 
